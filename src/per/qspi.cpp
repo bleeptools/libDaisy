@@ -501,7 +501,6 @@ QSPIHandle::Result QSPIHandle::Impl::EraseSector(uint32_t address)
     return QSPIHandle::Result::OK;
 }
 
-__attribute__((optimize("O0")))
 QSPIHandle::Result QSPIHandle::Impl::EraseBlock(uint32_t address, bool is_32k)
 {
     QSPI_CommandTypeDef s_command;
