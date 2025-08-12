@@ -66,9 +66,9 @@ class SaiHandle
         /** Bit Depth that the hardware expects to be transferred to/from the device. */
         enum class BitDepth
         {
-            SAI_16BIT,
+            // SAI_16BIT,
             SAI_24BIT,
-            SAI_32BIT,
+            // SAI_32BIT,
         };
 
         /** Specifies whether a particular block is the master or the slave

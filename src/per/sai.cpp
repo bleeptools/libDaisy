@@ -156,19 +156,20 @@ SaiHandle::Result SaiHandle::Impl::Init(const SaiHandle::Config& config)
     uint32_t protocol = SAI_I2S_STANDARD;
     switch(config.bit_depth)
     {
-        case Config::BitDepth::SAI_16BIT:
-            bd       = SAI_PROTOCOL_DATASIZE_16BIT;
-            protocol = SAI_I2S_STANDARD;
-            break;
+        // case Config::BitDepth::SAI_16BIT:
+        //     bd       = SAI_PROTOCOL_DATASIZE_16BIT;
+        //     protocol = SAI_I2S_STANDARD;
+        //     break;
+        default:
         case Config::BitDepth::SAI_24BIT:
             bd       = SAI_PROTOCOL_DATASIZE_24BIT;
             protocol = SAI_I2S_MSBJUSTIFIED;
             break;
-        case Config::BitDepth::SAI_32BIT:
-            // Untested Configuration
-            bd       = SAI_PROTOCOL_DATASIZE_32BIT;
-            protocol = SAI_I2S_STANDARD;
-            break;
+        // case Config::BitDepth::SAI_32BIT:
+        //     // Untested Configuration
+        //     bd       = SAI_PROTOCOL_DATASIZE_32BIT;
+        //     protocol = SAI_I2S_STANDARD;
+        //     break;
     }
 
     // Generic Inits that we don't have API control over.
