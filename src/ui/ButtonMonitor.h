@@ -72,13 +72,24 @@ class ButtonMonitor
 
         for(uint32_t i = 0; i < numButtons; i++)
         {
-            buttonStates_[i]        = -timeout_ - 1; // starting in "released" state
+            buttonStates_[i]        = (timeout_ > 0) ? -timeout_ : -1;// starting in "released" state
             lastClickTimes_[i]      = 0;
             lastRetriggerTimes_[i]  = 0;
             numSuccessiveClicks_[i] = 0;
         }
 
+        longPressThresholds_[0] = 0;
+        longPressThresholds_[1] = 0;
+
         lastCallSysTime_ = System::GetNow();
+    }
+
+    // Add up to 2 long press thresholds
+    void AddLongPressThreshold(uint32_t ms, size_t thrshidx)
+    {
+        if(thrshidx >= 2)
+            return;
+        longPressThresholds_[thrshidx] = ms;
     }
 
     /** Checks the value of each button and generates messages for the UIEventQueue.
@@ -150,20 +161,39 @@ class ButtonMonitor
                     if(buttonStates_[id] - 1 >= timeout_)
                         PostPhysicalButtonDownEvent(id, currentSystemTime);
                 }
-                // already pressed - check retriggering if enabled
-                else if(retriggerTimeoutMs_ > 0)
+                // already pressed - check retriggering if enabled and check long presses
+                else
                 {
-                    const auto timeSincePress
-                        = currentSystemTime - lastClickTimes_[id];
-                    if(timeSincePress >= retriggerTimeoutMs_)
+                    const int32_t prev = buttonStates_[id];
+                    buttonStates_[id] += timeInMsSinceLastCall;
+
+                    if(retriggerTimeoutMs_ > 0)
                     {
-                        const auto timeSinceLastRetrigger
-                            = currentSystemTime - lastRetriggerTimes_[id];
-                        if(timeSinceLastRetrigger > retriggerPeriodMs_)
+                        const auto timeSincePress
+                            = currentSystemTime - lastClickTimes_[id];
+                        if(timeSincePress >= retriggerTimeoutMs_)
                         {
-                            lastRetriggerTimes_[id] = currentSystemTime;
-                            queue_->AddButtonPressed(
-                                id, numSuccessiveClicks_[id], true);
+                            const auto timeSinceLastRetrigger
+                                = currentSystemTime - lastRetriggerTimes_[id];
+                            if(timeSinceLastRetrigger > retriggerPeriodMs_)
+                            {
+                                lastRetriggerTimes_[id] = currentSystemTime;
+                                queue_->AddButtonPressed(
+                                    id, numSuccessiveClicks_[id], true);
+                            }
+                        }
+                    }
+                    for(size_t i = 0; i < 2; i++)
+                    {
+                        if(longPressThresholds_[i] > 0)
+                        {
+                            if((uint32_t)prev < longPressThresholds_[i]
+                               && (uint32_t)buttonStates_[id]
+                                      >= longPressThresholds_[i])
+                            {
+                                queue_->AddButtonLongPressed(
+                                    id, longPressThresholds_[i]);
+                            }
                         }
                     }
                 }
@@ -191,7 +221,7 @@ class ButtonMonitor
         queue_->AddButtonPressed(id, numSuccessiveClicks_[id], false);
     }
 
-    ButtonMonitor(const ButtonMonitor&) = delete;
+    ButtonMonitor(const ButtonMonitor&)            = delete;
     ButtonMonitor& operator=(const ButtonMonitor&) = delete;
 
     UiEventQueue* queue_;
@@ -200,12 +230,15 @@ class ButtonMonitor
     uint32_t      doubleClickTimeout_;
     uint32_t      retriggerTimeoutMs_;
     uint32_t      retriggerPeriodMs_;
-    int16_t       buttonStates_[numButtons]; // <= -timeout --> not pressed,
+    int32_t       buttonStates_[numButtons]; // <= -timeout --> not pressed,
                                              // >= timeout_ --> pressed
     uint32_t lastClickTimes_[numButtons];
     uint32_t lastRetriggerTimes_[numButtons];
     uint8_t  numSuccessiveClicks_[numButtons];
     uint32_t lastCallSysTime_;
+
+    // max of 2
+    uint32_t longPressThresholds_[2];
 };
 
 } // namespace daisy

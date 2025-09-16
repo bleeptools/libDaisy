@@ -7,8 +7,8 @@ namespace daisy
 {
 /** @brief A queue that holds user input events in the UI system.
  *  @author jelliesen
- *  @ingroup ui 
- * 
+ *  @ingroup ui
+ *
  * A queue that holds user interface events such as button presses or encoder turns.
  * The queue can be filled from hardware drivers and read from a UI object.
  * Access to the queue is protected by a ScopedIrqBlocker - that means it's safe to add
@@ -36,6 +36,8 @@ class UiEventQueue
             invalid,
             /** A button was pressed. */
             buttonPressed,
+            /** A button was held longer than a defined threshold. */
+            buttonLongPressed,
             /** A button was released. */
             buttonReleased,
             /** An encoder was turned. */
@@ -68,7 +70,7 @@ class UiEventQueue
                 uint16_t id;
                 /** The number of successive button presses (e.g. double click). */
                 uint16_t numSuccessivePresses;
-                /** True if the event was generated because a button was retriggered 
+                /** True if the event was generated because a button was retriggered
                  *  automatically while being held down. */
                 bool isRetriggering;
             } asButtonPressed;
@@ -77,6 +79,12 @@ class UiEventQueue
                 /** The unique ID of the button that was released. */
                 uint16_t id;
             } asButtonReleased;
+            struct __attribute__((packed))
+            {
+                /** The unique ID of the button that was pressed. */
+                uint16_t id;
+                uint32_t ms_held;
+            } asButtonLongPressed;
             struct __attribute__((packed))
             {
                 /** The unique ID of the encoder that was turned. */
@@ -123,6 +131,16 @@ class UiEventQueue
         e.asButtonPressed.id = buttonID;
         e.asButtonPressed.numSuccessivePresses = numSuccessivePresses;
         e.asButtonPressed.isRetriggering       = isRetriggering;
+        ScopedIrqBlocker sIrqBl;
+        events_.PushBack(e);
+    }
+
+    void AddButtonLongPressed(uint16_t buttonId, uint32_t ms_held)
+    {
+        Event e;
+        e.type                        = Event::EventType::buttonLongPressed;
+        e.asButtonLongPressed.id      = buttonId;
+        e.asButtonLongPressed.ms_held = ms_held;
         ScopedIrqBlocker sIrqBl;
         events_.PushBack(e);
     }

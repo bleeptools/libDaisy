@@ -174,6 +174,13 @@ void UI::ProcessEvent(const UiEventQueue::Event& e)
         case UiEventQueue::Event::EventType::buttonReleased:
             ForwardToButtonHandler(e.asButtonReleased.id, 0, false);
             break;
+        case UiEventQueue::Event::EventType::buttonLongPressed:
+            for(int i = int(pages_.GetNumElements()) - 1; i >= 0; i--)
+            {
+                if(pages_[i]->OnButtonLongPressed(e.asButtonLongPressed.id, e.asButtonLongPressed.ms_held))
+                    break;
+            }
+            break;
         case UiEventQueue::Event::EventType::encoderTurned:
             for(int32_t i = pages_.GetNumElements() - 1; i >= 0; i--)
             {
