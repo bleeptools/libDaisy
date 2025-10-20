@@ -38,7 +38,7 @@ bool MidiParser::Parse(uint8_t byte, MidiEvent* event_out)
                         if(incoming_message_.sc_type == SystemExclusive)
                         {
                             pstate_                             = ParserSysEx;
-                            incoming_message_.sysex_message_len = 0;
+                            // incoming_message_.sysex_message_len = 0;
                         }
                         //short circuit
                         else if(incoming_message_.sc_type > SongSelect)
@@ -167,19 +167,19 @@ bool MidiParser::Parse(uint8_t byte, MidiEvent* event_out)
             if(byte == 0xf7)
             {
                 pstate_ = ParserEmpty;
-                if(event_out != nullptr)
-                {
-                    *event_out = incoming_message_;
-                }
-                did_parse = true;
+                // if(event_out != nullptr)
+                // {
+                //     *event_out = incoming_message_;
+                // }
+                // did_parse = true;
             }
-            else if(incoming_message_.sysex_message_len < SYSEX_BUFFER_LEN)
-            {
-                incoming_message_
-                    .sysex_data[incoming_message_.sysex_message_len]
-                    = byte;
-                incoming_message_.sysex_message_len++;
-            }
+            // else if(incoming_message_.sysex_message_len < SYSEX_BUFFER_LEN)
+            // {
+            //     incoming_message_
+            //         .sysex_data[incoming_message_.sysex_message_len]
+            //         = byte;
+            //     incoming_message_.sysex_message_len++;
+            // }
             break;
         default: break;
     }

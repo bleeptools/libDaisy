@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 // TODO: make this adjustable
-#define SYSEX_BUFFER_LEN 128
+// #define SYSEX_BUFFER_LEN 128
 
 namespace daisy
 {
@@ -149,11 +149,11 @@ struct ChannelModeEvent
 /** Struct containing sysex data.
 Can be made from MidiEvent
 */
-struct SystemExclusiveEvent
-{
-    int     length;
-    uint8_t data[SYSEX_BUFFER_LEN]; /**< & */
-};
+// struct SystemExclusiveEvent
+// {
+//     int     length;
+//     uint8_t data[SYSEX_BUFFER_LEN]; /**< & */
+// };
 /** Struct containing QuarterFrame data.
 Can be made from MidiEvent
 */
@@ -246,8 +246,8 @@ struct MidiEvent
     MidiMessageType    type;                         /**< & */
     int                channel;                      /**< & */
     uint8_t            data[2];                      /**< & */
-    uint8_t            sysex_data[SYSEX_BUFFER_LEN]; /**< & */
-    uint8_t            sysex_message_len;
+    // uint8_t            sysex_data[SYSEX_BUFFER_LEN]; /**< & */
+    // uint8_t            sysex_message_len;
     SystemCommonType   sc_type;
     SystemRealTimeType srt_type;
     ChannelModeType    cm_type;
@@ -330,20 +330,20 @@ struct MidiEvent
         return m;
     }
 
-    SystemExclusiveEvent AsSystemExclusive()
-    {
-        SystemExclusiveEvent m;
-        m.length = sysex_message_len;
-        for(int i = 0; i < SYSEX_BUFFER_LEN; i++)
-        {
-            m.data[i] = 0;
-            if(i < m.length)
-            {
-                m.data[i] = sysex_data[i];
-            }
-        }
-        return m;
-    }
+    // SystemExclusiveEvent AsSystemExclusive()
+    // {
+    //     SystemExclusiveEvent m;
+    //     m.length = sysex_message_len;
+    //     for(int i = 0; i < SYSEX_BUFFER_LEN; i++)
+    //     {
+    //         m.data[i] = 0;
+    //         if(i < m.length)
+    //         {
+    //             m.data[i] = sysex_data[i];
+    //         }
+    //     }
+    //     return m;
+    // }
     MTCQuarterFrameEvent AsMTCQuarterFrame()
     {
         MTCQuarterFrameEvent m;

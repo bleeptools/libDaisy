@@ -82,19 +82,19 @@ MidiTxMessage MidiTxMessage::SystemRealtimeStop()
     msg.size    = 1;
     return msg;
 }
-MidiTxMessage MidiTxMessage::SystemExclusive(const uint8_t* data, size_t size)
-{
-    if(size > SYSEX_BUFFER_LEN)
-        return MidiTxMessage();
+// MidiTxMessage MidiTxMessage::SystemExclusive(const uint8_t* data, size_t size)
+// {
+//     if(size > SYSEX_BUFFER_LEN)
+//         return MidiTxMessage();
 
-    // Sysex data + start byte + stop byte
-    MidiTxMessage msg;
-    msg.size = size + 2;
-    // start byte
-    msg.data[0] = 0xF0;
-    // data
-    memcpy(msg.data + 1, data, size);
-    // stop byte
-    msg.data[size + 1] = 0xF7;
-    return msg;
-}
+//     // Sysex data + start byte + stop byte
+//     MidiTxMessage msg;
+//     msg.size = size + 2;
+//     // start byte
+//     msg.data[0] = 0xF0;
+//     // data
+//     memcpy(msg.data + 1, data, size);
+//     // stop byte
+//     msg.data[size + 1] = 0xF7;
+//     return msg;
+// }

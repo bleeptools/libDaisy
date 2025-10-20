@@ -9,7 +9,7 @@ namespace daisy
 {
 struct MidiTxMessage
 {
-    static constexpr size_t kMaxDataSize = SYSEX_BUFFER_LEN + 2;
+    static constexpr size_t kMaxDataSize = 4;
 
     uint8_t data[kMaxDataSize];
     size_t  size;
@@ -24,7 +24,7 @@ struct MidiTxMessage
     static MidiTxMessage SystemRealtimeClock();
     static MidiTxMessage SystemRealtimeStart();
     static MidiTxMessage SystemRealtimeStop();
-    static MidiTxMessage SystemExclusive(const uint8_t* data, size_t size);
+    // static MidiTxMessage SystemExclusive(const uint8_t* data, size_t size);
 };
 
 template <size_t kSize>
