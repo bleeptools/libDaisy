@@ -119,12 +119,12 @@ SdramHandle::Result SdramHandle::PeriphInit(const Config &config)
     {
         // Old timings
         SdramTiming.LoadToActiveDelay    = 2;
-        SdramTiming.ExitSelfRefreshDelay = 7;
+        SdramTiming.ExitSelfRefreshDelay = 8;
         SdramTiming.SelfRefreshTime      = 4;
-        SdramTiming.RowCycleDelay        = 8; // started at 7
+        SdramTiming.RowCycleDelay        = 10; // started at 7
         SdramTiming.WriteRecoveryTime    = 3;
-        SdramTiming.RPDelay              = 16;
-        SdramTiming.RCDDelay             = 10; // started at 2
+        SdramTiming.RPDelay              = 6;
+        SdramTiming.RCDDelay             = 7; // started at 2
     }
 
     // This is not accessible via the HAL so we must do this manually
@@ -235,7 +235,7 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
 
     if(config.clock_boost)
     {
-        // optimized refresh rate for 120mhz clock
+        // optimized refresh rate for 125mhz clock
         /*
             Refresh rate = 64ms / 8192 rows = 7.81uS
             7.81uS * 125Mhz = 976.25 - 20 = 957
@@ -244,8 +244,13 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     }
     else
     {
-        //HAL_SDRAM_ProgramRefreshRate(hsdram, 0x56A - 20);
-        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 0x81A - 20);
+        // optimized refresh rate for 100mhz clock
+        /*
+            Refresh rate = 64ms / 8192 rows = 7.81uS
+            7.81uS * 100Mhz = 781 - 20 = 761
+        */
+        // HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 0x81A - 20);
+        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 762);
     }
     return Result::OK;
 }
