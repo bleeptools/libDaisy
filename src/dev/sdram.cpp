@@ -83,21 +83,49 @@ SdramHandle::Result SdramHandle::PeriphInit(const Config &config)
     dsy_sdram.hsdram.Init.ReadBurst       = FMC_SDRAM_RBURST_ENABLE;
     dsy_sdram.hsdram.Init.ReadPipeDelay   = FMC_SDRAM_RPIPE_DELAY_0;
     /* SdramTiming */
-    SdramTiming.LoadToActiveDelay    = 2;
-    SdramTiming.ExitSelfRefreshDelay = 7;
-    SdramTiming.SelfRefreshTime      = 4;
-    SdramTiming.RowCycleDelay        = 8; // started at 7
-    SdramTiming.WriteRecoveryTime    = 3;
-    SdramTiming.RPDelay              = 16;
-    SdramTiming.RCDDelay             = 10; // started at 2
-    //    SdramTiming.LoadToActiveDelay = 16;
-    //    SdramTiming.ExitSelfRefreshDelay = 16;
-    //    SdramTiming.SelfRefreshTime = 16;
-    //    SdramTiming.RowCycleDelay = 16;
-    //    SdramTiming.WriteRecoveryTime = 16;
-    //    SdramTiming.RPDelay = 16;
-    //    SdramTiming.RCDDelay = 16;
+    if(config.clock_speed == Config::ClockSpeed::CLK_120MHz)
+    {
+        // Optimized timings for 120Mhz
+        /*
+        -- FOR CAS LATENCY 3 --
+        Timings from datasheet
 
+        120Mhz clock = 8.33ns period
+
+        tWR     - Write recovery time (min.) 15ns
+                - 2  clock cycles
+
+        tXSR    - Exit self refresh (min.) 80ns
+                - 10 clock cycles
+
+        tRP     - Precharge to active time (min.) 18ns
+                - 3 clock cycles
+
+        tRAS    - Active to Precharge (aka Row Active) time (min.) 48ns
+                - 6 clock cycles
+
+        tRC     - Row Cycle time (min.) 60ns
+                - 8 clock cycles
+        */
+        SdramTiming.LoadToActiveDelay    = 2;
+        SdramTiming.ExitSelfRefreshDelay = 10;
+        SdramTiming.SelfRefreshTime      = 4;
+        SdramTiming.RowCycleDelay        = 10;
+        SdramTiming.WriteRecoveryTime    = 3;
+        SdramTiming.RPDelay              = 3;
+        SdramTiming.RCDDelay             = 8;
+    }
+    else
+    {
+        // Old timings
+        SdramTiming.LoadToActiveDelay    = 2;
+        SdramTiming.ExitSelfRefreshDelay = 7;
+        SdramTiming.SelfRefreshTime      = 4;
+        SdramTiming.RowCycleDelay        = 8; // started at 7
+        SdramTiming.WriteRecoveryTime    = 3;
+        SdramTiming.RPDelay              = 16;
+        SdramTiming.RCDDelay             = 10; // started at 2
+    }
 
     // This is not accessible via the HAL so we must do this manually
     if(config.swap_psram_bank)
@@ -144,9 +172,8 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     /* Send the command */
     HAL_SDRAM_SendCommand(&dsy_sdram.hsdram, &Command, 0x1000);
 
-    /* Step 4: Insert 100 ms delay */
-    HAL_Delay(100);
-
+    /* Step 4: Insert 1 ms delay */
+    HAL_Delay(1);
 
     /* Step 5: Configure a PALL (precharge all) command */
     Command.CommandMode            = FMC_SDRAM_CMD_PALL;
@@ -160,7 +187,7 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     /* Step 6 : Configure a Auto-Refresh command */
     Command.CommandMode            = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
     Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK1;
-    Command.AutoRefreshNumber      = 4;
+    Command.AutoRefreshNumber      = 2;
     Command.ModeRegisterDefinition = 0;
 
     /* Send the command */
@@ -206,8 +233,20 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     /* Send the command */
     HAL_SDRAM_SendCommand(&dsy_sdram.hsdram, &Command, 0x1000);
 
-    //HAL_SDRAM_ProgramRefreshRate(hsdram, 0x56A - 20);
-    HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 0x81A - 20);
+    if(config.clock_speed == Config::ClockSpeed::CLK_120MHz)
+    {
+        // optimized refresh rate for 120mhz clock
+        /*
+            Refresh rate = 64ms / 8192 rows = 7.81uS
+            7.81uS * 120Mhz = 937.2 - 20 = 918
+        */
+        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 918);
+    }
+    else
+    {
+        //HAL_SDRAM_ProgramRefreshRate(hsdram, 0x56A - 20);
+        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 0x81A - 20);
+    }
     return Result::OK;
 }
 

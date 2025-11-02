@@ -480,12 +480,27 @@ void System::ConfigureClocks()
     */
 
     // New Timing
-    PeriphClkInitStruct.PLL2.PLL2N     = 12; // Max supported freq of FMC;
-    PeriphClkInitStruct.PLL2.PLL2M     = 1;
-    PeriphClkInitStruct.PLL2.PLL2P     = 8; // 25MHz
-    PeriphClkInitStruct.PLL2.PLL2Q     = 2; // 100MHz
-    PeriphClkInitStruct.PLL2.PLL2R     = 1; // 200MHz
-    PeriphClkInitStruct.PLL2.PLL2FRACN = 4096;
+    if(cfg_.sdram_boost_clock)
+    {
+        // Boost FMC to 240Mhz (= 120MHz SDRAM clock)
+        // Slightly slower SPI / ADC clock
+        // TODO: This doubles SDMMC Clock, need to increase divisions
+        PeriphClkInitStruct.PLL2.PLL2N     = 120;
+        PeriphClkInitStruct.PLL2.PLL2M     = 4;
+        PeriphClkInitStruct.PLL2.PLL2P     = 20; // ~24MHz
+        PeriphClkInitStruct.PLL2.PLL2Q     = 2;  // 96MHz
+        PeriphClkInitStruct.PLL2.PLL2R     = 1;  // 240MHz
+        PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+    }
+    else
+    {
+        PeriphClkInitStruct.PLL2.PLL2N     = 12; // Max supported freq of FMC;
+        PeriphClkInitStruct.PLL2.PLL2M     = 2;
+        PeriphClkInitStruct.PLL2.PLL2P     = 8; // 25MHz
+        PeriphClkInitStruct.PLL2.PLL2Q     = 2; // 100MHz
+        PeriphClkInitStruct.PLL2.PLL2R     = 1; // 200MHz
+        PeriphClkInitStruct.PLL2.PLL2FRACN = 4096;
+    }
 
 
     PeriphClkInitStruct.PLL2.PLL2RGE    = RCC_PLL2VCIRANGE_2;
@@ -546,7 +561,8 @@ void System::ConfigureMpu()
     MPU_InitStruct.Number       = MPU_REGION_NUMBER1;
     MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
     MPU_InitStruct.Size         = MPU_REGION_SIZE_64MB;
-    MPU_InitStruct.BaseAddress = cfg_.swap_sdram_psram ? 0x60000000 : 0xC0000000;
+    MPU_InitStruct.BaseAddress
+        = cfg_.swap_sdram_psram ? 0x60000000 : 0xC0000000;
     HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
     // Configure the backup SRAM region as non-cacheable

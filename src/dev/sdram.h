@@ -91,6 +91,12 @@ class SdramHandle
 
     struct Config
     {
+        enum class ClockSpeed
+        {
+            CLK_100MHz,
+            CLK_120MHz
+        };
+
         enum class BurstLength
         {
             LENGTH_1,
@@ -106,21 +112,23 @@ class SdramHandle
             PROG    //< Enables writes at programmed burst length
         };
 
+        ClockSpeed     clock_speed;
+        BurstLength    burst_length;
+        WriteBurstMode write_burst_mode;
         /// This swaps SDRAM bank1 (start address 0xc0000000)
         /// with PSRAM bank (start address 0x60000000).
         /// @warning If this is enabled, you must update the linker
         //           script and MPU config for the proper address range.
-        bool           swap_psram_bank;
-        BurstLength    burst_length;
-        WriteBurstMode write_burst_mode;
+        bool swap_psram_bank;
 
         Config() { Defaults(); }
 
         void Defaults()
         {
-            swap_psram_bank  = false;
+            clock_speed      = ClockSpeed::CLK_100MHz;
             burst_length     = BurstLength::LENGTH_4;
             write_burst_mode = WriteBurstMode::SINGLE;
+            swap_psram_bank  = false;
         }
     };
 
