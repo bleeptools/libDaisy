@@ -172,8 +172,8 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     /* Send the command */
     HAL_SDRAM_SendCommand(&dsy_sdram.hsdram, &Command, 0x1000);
 
-    /* Step 4: Insert 1 ms delay */
-    HAL_Delay(1);
+    /* Step 4: Insert 100 ms delay */
+    HAL_Delay(100);
 
     /* Step 5: Configure a PALL (precharge all) command */
     Command.CommandMode            = FMC_SDRAM_CMD_PALL;
@@ -187,7 +187,7 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     /* Step 6 : Configure a Auto-Refresh command */
     Command.CommandMode            = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
     Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK1;
-    Command.AutoRefreshNumber      = 2;
+    Command.AutoRefreshNumber      = 4;
     Command.ModeRegisterDefinition = 0;
 
     /* Send the command */

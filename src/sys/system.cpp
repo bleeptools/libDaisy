@@ -495,7 +495,7 @@ void System::ConfigureClocks()
     else
     {
         PeriphClkInitStruct.PLL2.PLL2N     = 12; // Max supported freq of FMC;
-        PeriphClkInitStruct.PLL2.PLL2M     = 2;
+        PeriphClkInitStruct.PLL2.PLL2M     = 1;
         PeriphClkInitStruct.PLL2.PLL2P     = 8; // 25MHz
         PeriphClkInitStruct.PLL2.PLL2Q     = 2; // 100MHz
         PeriphClkInitStruct.PLL2.PLL2R     = 1; // 200MHz
