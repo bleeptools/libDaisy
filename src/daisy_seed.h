@@ -10,7 +10,7 @@
 namespace daisy
 {
 /**
-   @brief This is the higher-level interface for the Daisy board. \n 
+   @brief This is the higher-level interface for the Daisy board. \n
     All basic peripheral configuration/initialization is setup here. \n
 
    @ingroup boards
@@ -21,12 +21,12 @@ class DaisySeed
     DaisySeed() {}
     ~DaisySeed() {}
 
-    /** This function used to provide a pre-initialization configuraiton 
+    /** This function used to provide a pre-initialization configuraiton
      *  it has since been deprecated, and does nothing.
      */
     void Configure();
 
-    /** 
+    /**
     Initializes the Daisy Seed and the following peripherals:
     SDRAM, QSPI, 24-bit 48kHz Audio via AK4556, Internal USB,
     as well as the built-in LED and Testpoint.
@@ -35,20 +35,21 @@ class DaisySeed
     can be initialized using their specific initializers within libdaisy
     for a specific application.
     */
-    void Init(bool boost = false);
+    void Init(bool                       boost     = false,
+              const SdramHandle::Config& sdram_cfg = SdramHandle::Config());
 
-    /** 
+    /**
     Deinitializes all peripherals automatically handled by `Init`.
     */
     void DeInit();
 
-    /** 
+    /**
     Wait some ms before going on.
     \param del Delay time in ms.
     */
     void DelayMs(size_t del);
 
-    /** 
+    /**
     Returns the gpio_pin corresponding to the index 0-31.
     For the given GPIO on the Daisy Seed (labeled 1-32 in docs).
     */
@@ -97,9 +98,9 @@ class DaisySeed
     /** Returns the rate in Hz that the Audio callback is called */
     float AudioCallbackRate() const;
 
-    /** Returns the SAI Handle for the Daisy Seed 
+    /** Returns the SAI Handle for the Daisy Seed
      *  This can be useful when adding a secondary codec,
-     *  the result of this function can be passed to the audio reinit 
+     *  the result of this function can be passed to the audio reinit
      *  with an SAI2 configuration
      */
     const SaiHandle& AudioSaiHandle() const;
@@ -149,7 +150,7 @@ class DaisySeed
     System             system;
     Ak4556             codec;
 
-    /** Internal indices for DaisySeed-equivalent devices 
+    /** Internal indices for DaisySeed-equivalent devices
      *  This shouldn't have any effect on user-facing code,
      *  and only needs to be checked to properly initialize
      *  the onboard-circuits.
@@ -189,7 +190,7 @@ class DaisySeed
     SaiHandle sai_1_handle_;
 };
 
-/** seed namespace contains pinout constants for addressing 
+/** seed namespace contains pinout constants for addressing
  * the pins on the Daisy Seed SOM.
  */
 namespace seed

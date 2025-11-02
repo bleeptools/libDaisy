@@ -90,7 +90,7 @@ const Pin seedgpio[32] = {
  */
 void DaisySeed::Configure() {}
 
-void DaisySeed::Init(bool boost)
+void DaisySeed::Init(bool boost, const SdramHandle::Config& sdram_cfg)
 {
     //dsy_system_init();
     System::Config syscfg;
@@ -127,7 +127,7 @@ void DaisySeed::Init(bool boost)
     {
         led.Init(led.GetConfig());
         testpoint.Init(testpoint.GetConfig());
-        sdram_handle.Init();
+        sdram_handle.Init(sdram_cfg);
     }
 
     ConfigureAudio();

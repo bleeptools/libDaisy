@@ -69,13 +69,13 @@ SECTIONS
     The variables placed here will also need to fit inside of the flash in order to initialize.
   */
 
-/** Usage: \n 
+/** Usage: \n
   E.g. int DSY_SDRAM_DATA initialized_var = 1; */
 #define DSY_SDRAM_DATA __attribute__((section(".sdram_data")))
 
 
-/** Variables placed here will not be initialized. \n 
-    Usage \n 
+/** Variables placed here will not be initialized. \n
+    Usage \n
     E.g. int DSY_SDRAM_BSS uninitialized_var;
 */
 #define DSY_SDRAM_BSS __attribute__((section(".sdram_bss")))
@@ -89,13 +89,42 @@ class SdramHandle
         ERR, /**< & */
     };
 
+    struct Config
+    {
+        enum class BurstLength
+        {
+            LENGTH_1,
+            LENGTH_2,
+            LENGTH_4,
+            LENGTH_8,
+            LENGTH_FULLPAGE
+        };
+
+        enum class WriteBurstMode
+        {
+            SINGLE, //< Single location writes only
+            PROG    //< Enables writes at programmed burst length
+        };
+
+        BurstLength    burst_length;
+        WriteBurstMode write_burst_mode;
+
+        Config() { Defaults(); }
+
+        void Defaults()
+        {
+            burst_length     = BurstLength::LENGTH_4;
+            write_burst_mode = WriteBurstMode::SINGLE;
+        }
+    };
+
     /** Initializes the SDRAM peripheral */
-    Result Init();
+    Result Init(const Config& config = Config());
     Result DeInit();
 
   private:
     Result PeriphInit();
-    Result DeviceInit();
+    Result DeviceInit(const Config& config);
     Result PeriphDeInit();
     Result DeviceDeInit();
 };

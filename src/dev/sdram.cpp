@@ -21,6 +21,8 @@
 //#include "fmc.h"
 #define SDRAM_MODEREG_BURST_LENGTH_2 ((1 << 0))
 #define SDRAM_MODEREG_BURST_LENGTH_4 ((1 << 1))
+#define SDRAM_MODEREG_BURST_LENGTH_8 ((1 << 0) | (1 << 1))
+#define SDRAM_MODEREG_BURST_LENGTH_PAGE ((1 << 0) | (1 << 1) | (1 << 2))
 
 #define SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL ((0 << 3))
 
@@ -28,8 +30,8 @@
 
 #define SDRAM_MODEREG_OPERATING_MODE_STANDARD ()
 
-#define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE ((1 << 9))
 #define SDRAM_MODEREG_WRITEBURST_MODE_PROG_BURST ((0 << 9))
+#define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE ((1 << 9))
 
 typedef struct
 {
@@ -39,13 +41,13 @@ typedef struct
 
 static dsy_sdram_t dsy_sdram;
 
-SdramHandle::Result SdramHandle::Init()
+SdramHandle::Result SdramHandle::Init(const Config &config)
 {
     if(PeriphInit() != Result::OK)
     {
         return Result::ERR;
     }
-    if(DeviceInit() != Result::OK)
+    if(DeviceInit(config) != Result::OK)
     {
         return Result::ERR;
     }
@@ -104,7 +106,7 @@ SdramHandle::Result SdramHandle::PeriphInit()
     return Result::OK;
 }
 
-SdramHandle::Result SdramHandle::DeviceInit()
+SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
 {
     FMC_SDRAM_CommandTypeDef Command;
 
@@ -141,10 +143,36 @@ SdramHandle::Result SdramHandle::DeviceInit()
     HAL_SDRAM_SendCommand(&dsy_sdram.hsdram, &Command, 0x1000);
 
     /* Step 7: Program the external memory mode register */
-    tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_4
-             | SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL | SDRAM_MODEREG_CAS_LATENCY_3
-             | SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
-    //SDRAM_MODEREG_OPERATING_MODE_STANDARD | // Used in example, but can't find reference except for "Test Mode"
+    tmpmrd = (uint32_t)SDRAM_MODEREG_CAS_LATENCY_3
+             | SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL;
+
+    if(config.write_burst_mode == Config::WriteBurstMode::PROG)
+    {
+        tmpmrd |= (uint32_t)SDRAM_MODEREG_WRITEBURST_MODE_PROG_BURST;
+    }
+    else
+    {
+        tmpmrd |= (uint32_t)SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+    }
+
+
+    switch(config.burst_length)
+    {
+        case Config::BurstLength::LENGTH_1:
+            // no bits set - already zero on correct bits
+            break;
+        case Config::BurstLength::LENGTH_2:
+            tmpmrd |= (uint32_t)SDRAM_MODEREG_BURST_LENGTH_2;
+            break;
+        case Config::BurstLength::LENGTH_8:
+            tmpmrd |= (uint32_t)SDRAM_MODEREG_BURST_LENGTH_8;
+            break;
+        case Config::BurstLength::LENGTH_FULLPAGE:
+            tmpmrd |= (uint32_t)SDRAM_MODEREG_BURST_LENGTH_PAGE;
+            break;
+        case Config::BurstLength::LENGTH_4:
+        default: tmpmrd |= (uint32_t)SDRAM_MODEREG_BURST_LENGTH_4; break;
+    }
 
     Command.CommandMode            = FMC_SDRAM_CMD_LOAD_MODE;
     Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK1;
@@ -204,7 +232,7 @@ static void HAL_FMC_MspInit(void)
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
 
-    /** FMC GPIO Configuration  
+    /** FMC GPIO Configuration
     PE1   ------> FMC_NBL1
     PE0   ------> FMC_NBL0
     PG15   ------> FMC_SDNCAS
@@ -368,7 +396,7 @@ static void HAL_FMC_MspDeInit(void)
     /* Peripheral clock enable */
     __HAL_RCC_FMC_CLK_DISABLE();
 
-    /** FMC GPIO Configuration  
+    /** FMC GPIO Configuration
     PE1   ------> FMC_NBL1
     PE0   ------> FMC_NBL0
     PG15   ------> FMC_SDNCAS
