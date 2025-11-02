@@ -83,14 +83,14 @@ SdramHandle::Result SdramHandle::PeriphInit(const Config &config)
     dsy_sdram.hsdram.Init.ReadBurst       = FMC_SDRAM_RBURST_ENABLE;
     dsy_sdram.hsdram.Init.ReadPipeDelay   = FMC_SDRAM_RPIPE_DELAY_0;
     /* SdramTiming */
-    if(config.clock_speed == Config::ClockSpeed::CLK_120MHz)
+    if(config.clock_boost)
     {
         // Optimized timings for 120Mhz
         /*
         -- FOR CAS LATENCY 3 --
         Timings from datasheet
 
-        120Mhz clock = 8.33ns period
+        125Mhz clock = 8ns period
 
         tWR     - Write recovery time (min.) 15ns
                 - 2  clock cycles
@@ -112,7 +112,7 @@ SdramHandle::Result SdramHandle::PeriphInit(const Config &config)
         SdramTiming.SelfRefreshTime      = 4;
         SdramTiming.RowCycleDelay        = 10;
         SdramTiming.WriteRecoveryTime    = 3;
-        SdramTiming.RPDelay              = 3;
+        SdramTiming.RPDelay              = 8;
         SdramTiming.RCDDelay             = 8;
     }
     else
@@ -233,14 +233,14 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
     /* Send the command */
     HAL_SDRAM_SendCommand(&dsy_sdram.hsdram, &Command, 0x1000);
 
-    if(config.clock_speed == Config::ClockSpeed::CLK_120MHz)
+    if(config.clock_boost)
     {
         // optimized refresh rate for 120mhz clock
         /*
             Refresh rate = 64ms / 8192 rows = 7.81uS
-            7.81uS * 120Mhz = 937.2 - 20 = 918
+            7.81uS * 125Mhz = 976.25 - 20 = 957
         */
-        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 918);
+        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 957);
     }
     else
     {

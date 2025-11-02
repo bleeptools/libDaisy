@@ -485,12 +485,12 @@ void System::ConfigureClocks()
         // Boost FMC to 240Mhz (= 120MHz SDRAM clock)
         // Slightly slower SPI / ADC clock
         // TODO: This doubles SDMMC Clock, need to increase divisions
-        PeriphClkInitStruct.PLL2.PLL2N     = 120;
-        PeriphClkInitStruct.PLL2.PLL2M     = 4;
-        PeriphClkInitStruct.PLL2.PLL2P     = 20; // ~24MHz
-        PeriphClkInitStruct.PLL2.PLL2Q     = 2;  // 96MHz
-        PeriphClkInitStruct.PLL2.PLL2R     = 1;  // 240MHz
-        PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+        PeriphClkInitStruct.PLL2.PLL2N     = 93;
+        PeriphClkInitStruct.PLL2.PLL2M     = 3;
+        PeriphClkInitStruct.PLL2.PLL2P     = 20; // ~25MHz
+        PeriphClkInitStruct.PLL2.PLL2Q     = 5;  // 100MHz
+        PeriphClkInitStruct.PLL2.PLL2R     = 2;  // 250MHz
+        PeriphClkInitStruct.PLL2.PLL2FRACN = 6144;
     }
     else
     {
