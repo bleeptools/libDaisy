@@ -38,6 +38,7 @@ class System
             use_dcache       = true;
             use_icache       = true;
             skip_clocks      = false;
+            swap_sdram_psram = false;
             sdram_boost      = false;
         }
 
@@ -47,10 +48,11 @@ class System
          ** */
         void Boost()
         {
-            cpu_freq    = SysClkFreq::FREQ_480MHZ;
-            use_dcache  = true;
-            use_icache  = true;
-            skip_clocks = false;
+            cpu_freq         = SysClkFreq::FREQ_480MHZ;
+            use_dcache       = true;
+            use_icache       = true;
+            skip_clocks      = false;
+            swap_sdram_psram = false;
             sdram_boost      = false;
         }
 
