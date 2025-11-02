@@ -43,7 +43,7 @@ static dsy_sdram_t dsy_sdram;
 
 SdramHandle::Result SdramHandle::Init(const Config &config)
 {
-    if(PeriphInit() != Result::OK)
+    if(PeriphInit(config) != Result::OK)
     {
         return Result::ERR;
     }
@@ -67,7 +67,7 @@ SdramHandle::Result SdramHandle::DeInit()
     return Result::OK;
 }
 
-SdramHandle::Result SdramHandle::PeriphInit()
+SdramHandle::Result SdramHandle::PeriphInit(const Config &config)
 {
     FMC_SDRAM_TimingTypeDef SdramTiming = {0};
     dsy_sdram.hsdram.Instance           = FMC_SDRAM_DEVICE;
@@ -98,11 +98,35 @@ SdramHandle::Result SdramHandle::PeriphInit()
     //    SdramTiming.RPDelay = 16;
     //    SdramTiming.RCDDelay = 16;
 
-    if(HAL_SDRAM_Init(&dsy_sdram.hsdram, &SdramTiming) != HAL_OK)
+
+    // This is not accessible via the HAL so we must do this manually
+    if(config.swap_psram_bank)
     {
-        //Error_Handler();
-        return Result::ERR;
+        auto *hsdram = &dsy_sdram.hsdram;
+        // NOTE: Manually doing the HAL checks here
+        hsdram->Lock = HAL_UNLOCKED;
+        HAL_SDRAM_MspInit(hsdram);
+        /* Initialize SDRAM control Interface */
+        (void)FMC_SDRAM_Init(hsdram->Instance, &(hsdram->Init));
+        HAL_Delay(1);
+
+        /* Initialize SDRAM timing Interface */
+        (void)FMC_SDRAM_Timing_Init(
+            hsdram->Instance, &SdramTiming, hsdram->Init.SDBank);
+        HAL_Delay(1);
+        //Enable the FMC and swap the NOR/PSRAM and SDRAM banks
+        FMC_Bank1_R->BTCR[0] |= FMC_BCR1_FMCEN | FMC_BCR1_BMAP_0;
+        hsdram->State = HAL_SDRAM_STATE_READY;
     }
+    else
+    {
+        if(HAL_SDRAM_Init(&dsy_sdram.hsdram, &SdramTiming) != HAL_OK)
+        {
+            //Error_Handler();
+            return Result::ERR;
+        }
+    }
+
     return Result::OK;
 }
 

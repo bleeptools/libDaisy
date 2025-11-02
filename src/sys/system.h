@@ -34,10 +34,11 @@ class System
          ** */
         void Defaults()
         {
-            cpu_freq    = SysClkFreq::FREQ_400MHZ;
-            use_dcache  = true;
-            use_icache  = true;
-            skip_clocks = false;
+            cpu_freq         = SysClkFreq::FREQ_400MHZ;
+            use_dcache       = true;
+            use_icache       = true;
+            skip_clocks      = false;
+            sdram_boost      = false;
         }
 
         /** Method to call on the struct to set to boost mode:
@@ -50,12 +51,18 @@ class System
             use_dcache  = true;
             use_icache  = true;
             skip_clocks = false;
+            sdram_boost      = false;
         }
 
         SysClkFreq cpu_freq;
         bool       use_dcache;
         bool       use_icache;
         bool       skip_clocks;
+
+        // ADVANCED: SDRAM stuff
+        // Must use direct config interface for these
+        bool swap_sdram_psram;
+        bool sdram_boost;
     };
 
     /** Describes the different regions of memory available to the Daisy */

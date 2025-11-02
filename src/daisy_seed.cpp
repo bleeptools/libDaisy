@@ -90,11 +90,18 @@ const Pin seedgpio[32] = {
  */
 void DaisySeed::Configure() {}
 
-void DaisySeed::Init(bool boost, const SdramHandle::Config& sdram_cfg)
+void DaisySeed::Init(bool boost)
 {
-    //dsy_system_init();
     System::Config syscfg;
     boost ? syscfg.Boost() : syscfg.Defaults();
+    SdramHandle::Config sdramcfg;
+    sdramcfg.Defaults();
+    Init(syscfg, sdramcfg);
+}
+
+void DaisySeed::Init(System::Config& syscfg, SdramHandle::Config& sdramcfg)
+{
+    //dsy_system_init();
 
     ConfigureQspi();
     // Configure the built-in GPIOs.
@@ -116,6 +123,20 @@ void DaisySeed::Init(bool boost, const SdramHandle::Config& sdram_cfg)
         syscfg.skip_clocks = true;
     }
 
+    // Check to ensure we always init system and sdram with
+    // swapped PSRAM if that's the user intention
+    // TODO: cleaner way to do this
+    if(syscfg.swap_sdram_psram || sdramcfg.swap_psram_bank)
+    {
+        syscfg.swap_sdram_psram = true;
+        sdramcfg.swap_psram_bank = true;
+    }
+    else
+    {
+        syscfg.swap_sdram_psram = false;
+        sdramcfg.swap_psram_bank = false;
+    }
+
     system.Init(syscfg);
 
     if(memory != System::MemoryRegion::QSPI)
@@ -127,7 +148,7 @@ void DaisySeed::Init(bool boost, const SdramHandle::Config& sdram_cfg)
     {
         led.Init(led.GetConfig());
         testpoint.Init(testpoint.GetConfig());
-        sdram_handle.Init(sdram_cfg);
+        sdram_handle.Init(sdramcfg);
     }
 
     ConfigureAudio();

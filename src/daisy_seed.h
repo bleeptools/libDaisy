@@ -35,8 +35,11 @@ class DaisySeed
     can be initialized using their specific initializers within libdaisy
     for a specific application.
     */
-    void Init(bool                       boost     = false,
-              const SdramHandle::Config& sdram_cfg = SdramHandle::Config());
+    void Init(bool boost = false);
+
+    // Alternative init using direct System config and SDRAM config
+    // for advanced usage
+    void Init(System::Config& syscfg, SdramHandle::Config& sdramcfg);
 
     /**
     Deinitializes all peripherals automatically handled by `Init`.
