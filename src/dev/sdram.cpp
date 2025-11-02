@@ -85,7 +85,7 @@ SdramHandle::Result SdramHandle::PeriphInit(const Config &config)
     /* SdramTiming */
     if(config.clock_boost)
     {
-        // Optimized timings for 120Mhz
+        // Optimized timings for 125Mhz
         /*
         -- FOR CAS LATENCY 3 --
         Timings from datasheet
@@ -240,7 +240,7 @@ SdramHandle::Result SdramHandle::DeviceInit(const Config &config)
             Refresh rate = 64ms / 8192 rows = 7.81uS
             7.81uS * 125Mhz = 976.25 - 20 = 957
         */
-        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 957);
+        HAL_SDRAM_ProgramRefreshRate(&dsy_sdram.hsdram, 958);
     }
     else
     {
