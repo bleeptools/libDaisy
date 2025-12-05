@@ -258,13 +258,15 @@ class MidiHandler
         \note  Normally application code won't need to use this method directly.
         \param byte MIDI byte to be parsed
     */
-    void Parse(uint8_t byte)
+    bool Parse(uint8_t byte)
     {
         MidiEvent event;
         if(parser_.Parse(byte, &event))
         {
             rx_event_q_.PushBack(event);
+            return true;
         }
+        return false;
     }
 
   private:
@@ -281,14 +283,26 @@ class MidiHandler
 
     static void ParseCallback(uint8_t* data, size_t size, void* context)
     {
+        static daisy::FIFO<uint8_t, 4> fwd_bytes;
+
         MidiHandler* handler = reinterpret_cast<MidiHandler*>(context);
-        if (handler->raw_cb_ != nullptr)
-        {
-            handler->raw_cb_(data, size);
-        }
+
         for(size_t i = 0; i < size; i++)
         {
-            handler->Parse(data[i]);
+            fwd_bytes.PushBack(data[i]);
+
+            if(handler->Parse(data[i]))
+            {
+                if(handler->raw_cb_ != nullptr)
+                {
+                    handler->raw_cb_(&fwd_bytes[0], fwd_bytes.GetNumElements());
+                }
+                fwd_bytes.Clear();
+            }
+            else if(fwd_bytes.GetNumElements() > 3)
+            {
+                fwd_bytes.Clear();
+            }
         }
     }
 
