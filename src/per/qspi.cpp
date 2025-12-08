@@ -464,7 +464,7 @@ QSPIHandle::Result QSPIHandle::Impl::EraseSector(uint32_t address)
     else
     {
         s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
-        s_command.Instruction     = BLOCK_ERASE_CMD;
+        s_command.Instruction     = SECTOR_ERASE_CMD;
         s_command.AddressMode     = QSPI_ADDRESS_1_LINE;
     }
     s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
