@@ -286,7 +286,7 @@ extern "C"
             __HAL_RCC_TIM4_CLK_ENABLE();
             if(cfg.enable_irq)
             {
-                HAL_NVIC_SetPriority(TIM4_IRQn, 0x0f, 0);
+                HAL_NVIC_SetPriority(TIM4_IRQn, 0x08, 0);
                 HAL_NVIC_EnableIRQ(TIM4_IRQn);
             }
         }

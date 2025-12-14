@@ -136,7 +136,7 @@ extern "C"
 
     void PendSV_Handler()
     {
-        tud_task();
+        // tud_task();
     }
 
     // TODO: Add some real handling to the HardFaultHandler
