@@ -72,7 +72,8 @@ class ButtonMonitor
 
         for(uint32_t i = 0; i < numButtons; i++)
         {
-            buttonStates_[i]        = (timeout_ > 0) ? -timeout_ : -1;// starting in "released" state
+            // starting in "released" state
+            buttonStates_[i] = -timeout_ - 1;
             lastClickTimes_[i]      = 0;
             lastRetriggerTimes_[i]  = 0;
             numSuccessiveClicks_[i] = 0;
