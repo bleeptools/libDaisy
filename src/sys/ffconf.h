@@ -86,7 +86,7 @@
 /-----------------------------------------------------------------------------*/
 
 #define _CODE_PAGE \
-    1 /**< This option specifies the OEM code page to be used on the target system.
+    850 /**< This option specifies the OEM code page to be used on the target system.
 /  Incorrect setting of the code page can cause a file open failure.
 /
 /   1   - ASCII (No extended character. Non-LFN cfg. only)
@@ -138,7 +138,7 @@ This option switches character encoding on the API. (0:ANSI/OEM or 1:UTF-16)
 /  This option also affects behavior of string I/O functions. */
 
 #define _STRF_ENCODE \
-    0 /**< When _LFN_UNICODE == 1, this option selects the character encoding ON THE FILE to
+    3 /**< When _LFN_UNICODE == 1, this option selects the character encoding ON THE FILE to
 /  be read/written via string I/O functions, f_gets(), f_putc(), f_puts and f_printf().
 /
 /  0: ANSI/OEM
@@ -161,7 +161,7 @@ This option switches character encoding on the API. (0:ANSI/OEM or 1:UTF-16)
 / Drive/Volume Configurations
 /----------------------------------------------------------------------------*/
 
-#define _VOLUMES 1 /**< Number of volumes (logical drives) to be used. */
+#define _VOLUMES 2 /**< Number of volumes (logical drives) to be used. */
 
 /* USER CODE BEGIN Volumes */
 #define _STR_VOLUME_ID \
@@ -216,7 +216,7 @@ This option switches support of multi-partition on a physical drive.
 /----------------------------------------------------------------------------*/
 
 #define _FS_TINY \
-    1 /**< 0:Normal or 1:Tiny
+    0 /**< 0:Normal or 1:Tiny
  This option switches tiny buffer configuration. (0:Normal or 1:Tiny)
 /  At the tiny configuration, size of file object (FIL) is reduced _MAX_SS bytes.
 /  Instead of private sector buffer eliminated from the file object, common sector
@@ -227,7 +227,7 @@ This option switches support of multi-partition on a physical drive.
 /  When enable exFAT, also LFN needs to be enabled. (_USE_LFN >= 1)
 /  Note that enabling exFAT discards C89 compatibility. */
 
-#define _FS_NORTC 1   /**< & */
+#define _FS_NORTC 0   /**< & */
 #define _NORTC_MON 6  /**< & */
 #define _NORTC_MDAY 4 /**< & */
 #define _NORTC_YEAR \
