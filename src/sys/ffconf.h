@@ -49,7 +49,7 @@
 /   3: f_lseek() function is removed in addition to 2. */
 
 #define _USE_STRFUNC \
-    0 /**< 0:Disable or 1-2:Enable
+    2 /**< 0:Disable or 1-2:Enable
  This option switches string functions, f_gets(), f_putc(), f_puts() and
 /  f_printf().
 /
@@ -62,10 +62,10 @@
 /  f_findnext(). (0:Disable, 1:Enable 2:Enable with matching altname[] too) */
 
 #define _USE_MKFS \
-    0 /**<  This option switches f_mkfs() function. (0:Disable or 1:Enable) */
+    1 /**<  This option switches f_mkfs() function. (0:Disable or 1:Enable) */
 
 #define _USE_FASTSEEK \
-    0 /**< This option switches fast seek feature. (0:Disable or 1:Enable) */
+    1 /**< This option switches fast seek feature. (0:Disable or 1:Enable) */
 
 #define _USE_EXPAND \
     0 /**< This option switches f_expand function. (0:Disable or 1:Enable) */
@@ -149,7 +149,7 @@ This option switches character encoding on the API. (0:ANSI/OEM or 1:UTF-16)
 /  This option has no effect when _LFN_UNICODE == 0. */
 
 #define _FS_RPATH \
-    0 /**< 0 to 2
+    2 /**< 0 to 2
  This option configures support of relative path.
 /
 /   0: Disable relative path and remove related functions.
