@@ -66,11 +66,10 @@
 // BOTH
 #define USBD_VID 1155
 #define USBD_LANGID_STRING 1033
-extern const char* USBD_MANUFACTURER_STRING;
-
+#define USBD_MANUFACTURER_STRING "Electrosmith"
 // HS
 #define USBD_PID_HS 22336 // replace with our PID when we have one.
-extern const char* USBD_PRODUCT_STRING_HS;
+#define USBD_PRODUCT_STRING_HS "Daisy Seed External"
 #define USBD_CONFIGURATION_STRING_HS "CDC Config"
 #define USBD_INTERFACE_STRING_HS "CDC Interface"
 // FS
